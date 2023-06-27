@@ -9,5 +9,5 @@ const Modal = ({ full, closeModal }) => {
     </div>
   );
 };
-
+// exp
 export default Modal;
