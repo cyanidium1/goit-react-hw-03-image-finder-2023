@@ -19,8 +19,8 @@ class Searchbar extends Component {
   };
   render() {
     return (
-      <div className="SearchForm">
-        <form onSubmit={this.handleSubmit}>
+      <div className="Searchbar">
+        <form className="SearchForm" onSubmit={this.handleSubmit}>
           <input
             className="SearchForm-input"
             type="text"
