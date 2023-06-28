@@ -16,10 +16,11 @@ export class App extends Component {
     modal: false,
     modalFull: null,
     page: 1,
+    showBtn: false,
   };
 
   setValue = searchName => {
-    this.setState({ searchName: searchName });
+    this.setState({ searchName: searchName, page: 1, pictures: null });
   };
 
   toggleModal = full => {
@@ -36,12 +37,16 @@ export class App extends Component {
 
   componentDidUpdate(prevProps, prevState) {
     if (prevState.page !== this.state.page) {
+      this.setState({ showBtn: false });
       getter(this.state.searchName, this.state.page)
         .then(response => {
           if (response.data.hits.length > 0) {
             this.setState({
               pictures: [...this.state.pictures, ...response.data.hits],
             });
+            if (response.data.hits.length / 12 === 1) {
+              this.setState({ showBtn: true });
+            }
           }
         })
         .catch(error => console.log('error msg:', error))
@@ -49,12 +54,15 @@ export class App extends Component {
     }
 
     if (prevState.searchName !== this.state.searchName) {
-      this.setState({ loading: true });
+      this.setState({ loading: true, showBtn: false });
 
       getter(this.state.searchName, this.state.page)
         .then(response => {
           if (response.data.hits.length > 0) {
             this.setState({ pictures: response.data.hits });
+            if (response.data.hits.length / 12 === 1) {
+              this.setState({ showBtn: true });
+            }
           } else {
             this.setState({ pictures: null });
           }
@@ -73,7 +81,7 @@ export class App extends Component {
           toggleModal={this.toggleModal}
         />
         {this.state.loading && <Loader />}
-        {this.state.pictures && <Button click={this.loadMore} />}
+        {this.state.showBtn && <Button click={this.loadMore} />}
         {this.state.modal && (
           <Modal full={this.state.modalFull} closeModal={this.closeModal} />
         )}
