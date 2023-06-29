@@ -10,7 +10,7 @@ import { getter } from 'utils/getter';
 
 export class App extends Component {
   state = {
-    pictures: null,
+    pictures: [],
     searchName: '',
     loading: false,
     modal: false,
@@ -36,35 +36,21 @@ export class App extends Component {
   };
 
   componentDidUpdate(prevProps, prevState) {
-    if (prevState.page !== this.state.page) {
+    if (
+      prevState.page !== this.state.page ||
+      prevState.searchName !== this.state.searchName
+    ) {
       this.setState({ showBtn: false });
       getter(this.state.searchName, this.state.page)
         .then(response => {
           if (response.data.hits.length > 0) {
             this.setState({
-              pictures: [...this.state.pictures, ...response.data.hits],
+              pictures: [
+                ...(this.state.pictures ? this.state.pictures : []),
+                ...response.data.hits,
+              ],
+              showBtn: response.data.hits.length / 12 === 1,
             });
-            if (response.data.hits.length / 12 === 1) {
-              this.setState({ showBtn: true });
-            }
-          }
-        })
-        .catch(error => console.log('error msg:', error))
-        .finally(this.setState({ loading: false }));
-    }
-
-    if (prevState.searchName !== this.state.searchName) {
-      this.setState({ loading: true, showBtn: false });
-
-      getter(this.state.searchName, this.state.page)
-        .then(response => {
-          if (response.data.hits.length > 0) {
-            this.setState({ pictures: response.data.hits });
-            if (response.data.hits.length / 12 === 1) {
-              this.setState({ showBtn: true });
-            }
-          } else {
-            this.setState({ pictures: null });
           }
         })
         .catch(error => console.log('error msg:', error))
@@ -89,3 +75,4 @@ export class App extends Component {
     );
   }
 }
+// ex
